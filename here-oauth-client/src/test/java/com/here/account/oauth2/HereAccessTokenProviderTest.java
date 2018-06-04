@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 public class HereAccessTokenProviderTest {
 
@@ -78,6 +79,27 @@ public class HereAccessTokenProviderTest {
                 return Clock.SYSTEM;
             }
         };
+
+    }
+
+    @Test
+    public void test_Supplier() throws IOException {
+        try (
+                HereAccessTokenProvider hereAccessTokenProvider
+                        = HereAccessTokenProvider.builder()
+                        .setHttpProvider(mockHttpProvider)
+                        .setClientAuthorizationRequestProvider(clientAuthorizationRequestProvider)
+                        .build();
+        ) {
+
+            for (int i = 0 ; i < 10; i++) {
+                String accessTokenFromSupplier = hereAccessTokenProvider.get();
+                assertTrue("expected access token from supplier " + expectedAccessToken
+                                + ", actual " + accessTokenFromSupplier,
+                        expectedAccessToken.equals(accessTokenFromSupplier));
+            }
+
+        }
 
     }
 
